@@ -138,8 +138,13 @@ function App() {
                 key={`start-${route.id}`}
                 position={route.coordenadas[0]}
                 icon={startRouteIcon}
-                title={route.nombre}
                 eventHandlers={{
+                  mouseover: (e) => {
+                    e.target.bindTooltip(
+                      `<strong>${route.nombre}</strong><br/>📏 ${route.distancia} km · ${route.dificultad}`,
+                      { className: 'route-tooltip', sticky: true, direction: 'top' }
+                    ).openTooltip()
+                  },
                   click: () => setSelectedRoute(route)
                 }}
               >
