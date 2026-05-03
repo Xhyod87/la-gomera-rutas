@@ -20,6 +20,10 @@ export default function Sidebar({
     }
   }
 
+  const sortedRoutes = selectedRoute
+    ? [selectedRoute, ...routes.filter(r => r.id !== selectedRoute.id)]
+    : routes
+
   return (
     <aside className={`sidebar ${!isOpen ? 'collapsed' : ''}`}>
       <div className="search-container">
@@ -46,12 +50,12 @@ export default function Sidebar({
       </div>
 
       <div className="routes-list">
-        {routes.length === 0 ? (
+        {sortedRoutes.length === 0 ? (
           <p style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
             No se encontraron rutas
           </p>
         ) : (
-          routes.map(route => (
+          sortedRoutes.map(route => (
             <div
               key={route.id}
               className={`route-card ${selectedRoute?.id === route.id ? 'selected' : ''}`}
