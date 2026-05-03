@@ -138,6 +138,7 @@ function App() {
                 key={`start-${route.id}`}
                 position={route.coordenadas[0]}
                 icon={startRouteIcon}
+                title={route.nombre}
                 eventHandlers={{
                   click: () => setSelectedRoute(route)
                 }}
