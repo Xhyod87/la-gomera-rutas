@@ -44,7 +44,7 @@ PR-LG 1, 5, 6, 7, 10, 12, 16, 17, Arure-Las Hayas, El Cedro, Riscos de La Méric
 
 ```bash
 # 1. Navega al directorio del proyecto
-cd "C:\Users\nango\Desktop\Nuevo Proyecto\la-gomera-rutas"
+cd la-gomera-rutas
 
 # 2. Instala las dependencias
 npm install
