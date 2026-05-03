@@ -15,16 +15,12 @@ export default function Legend() {
         <span>Dificultad Alta</span>
       </div>
       <div className="legend-item">
+        <span style={{ fontSize: '16px' }}>🚶</span>
+        <span>Inicio de ruta</span>
+      </div>
+      <div className="legend-item">
         <div className="legend-color" style={{ background: '#3b82f6' }} />
         <span>Ruta ejemplo 360°</span>
-      </div>
-      <div className="legend-item">
-        <div className="legend-color" style={{ background: '#d4a373', height: '12px', borderRadius: '50%' }} />
-        <span>Punto de interés</span>
-      </div>
-      <div className="legend-item">
-        <span style={{ fontSize: '16px' }}>📷</span>
-        <span>Vista 360° disponible</span>
       </div>
     </div>
   )

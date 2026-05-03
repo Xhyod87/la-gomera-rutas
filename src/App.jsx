@@ -26,14 +26,21 @@ const customIcon = (color = '#2d6a4f') => L.divIcon({
   iconAnchor: [12, 12],
 })
 
-const camera360Icon = L.divIcon({
-  html: `<svg width="32" height="32" viewBox="0 0 32 32">
-    <circle cx="16" cy="16" r="14" fill="#2d6a4f" stroke="white" stroke-width="2"/>
-    <text x="16" y="21" text-anchor="middle" font-size="16" fill="white">📷</text>
-  </svg>`,
+const startRouteIcon = L.divIcon({
+  html: `<div style="
+    width: 30px; height: 30px;
+    background: #22c55e;
+    border: 3px solid white;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  ">🚶</div>`,
   className: '',
-  iconSize: [32, 32],
-  iconAnchor: [16, 16],
+  iconSize: [30, 30],
+  iconAnchor: [15, 15],
 })
 
 function FitToRoute({ selectedRoute }) {
@@ -126,15 +133,21 @@ function App() {
               </>
             )}
 
-            {puntosInteres.map(punto => (
+            {rutas.map(route => (
               <Marker
-                key={punto.id}
-                position={punto.coordenadas}
-                icon={customIcon('#d4a373')}
+                key={`start-${route.id}`}
+                position={route.coordenadas[0]}
+                icon={startRouteIcon}
+                eventHandlers={{
+                  click: () => setSelectedRoute(route)
+                }}
               >
                 <Popup>
-                  <strong>{punto.nombre}</strong>
-                  <p style={{ margin: '4px 0 0', fontSize: '12px' }}>{punto.descripcion}</p>
+                  <strong>🚶 Inicio: {route.nombre}</strong>
+                  <p style={{ margin: '4px 0 0', fontSize: '12px' }}>{route.descripcion}</p>
+                  <p style={{ fontSize: '11px', color: '#666', marginTop: '6px' }}>
+                    {route.distancia} km · {route.duracion} · {route.dificultad}
+                  </p>
                 </Popup>
               </Marker>
             ))}

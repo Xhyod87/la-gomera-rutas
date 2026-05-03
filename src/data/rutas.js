@@ -1,3 +1,5 @@
+import { coordenadas as gr132Coords } from './gr132_coords.js';
+
 export const rutas = [
   // GR-132: Costas de La Gomera (Ruta circular ~120km, 8 etapas)
   {
@@ -11,45 +13,7 @@ export const rutas = [
     descripcion: 'Sendero circular que rodea toda la isla de La Gomera por la costa. Recorre paisajes de acantilados, barrancos y pueblos costeros.',
     inicio: 'San Sebastián de la Gomera',
     fin: 'San Sebastián de la Gomera',
-    coordenadas: [
-      [28.0883, -17.1142], // San Sebastián
-      [28.1010, -17.1280],
-      [28.1150, -17.1450],
-      [28.1280, -17.1580],
-      [28.1380, -17.1680],
-      [28.1480, -17.1780],
-      [28.1580, -17.1900],
-      [28.1680, -17.2050],
-      [28.1750, -17.2200], // Hermigua
-      [28.1780, -17.2350],
-      [28.1800, -17.2550],
-      [28.1750, -17.2750],
-      [28.1680, -17.2950],
-      [28.1600, -17.3100], // Agulo
-      [28.1480, -17.3200],
-      [28.1380, -17.3300],
-      [28.1280, -17.3350], // Vallehermoso
-      [28.1180, -17.3400],
-      [28.1080, -17.3350],
-      [28.0980, -17.3280],
-      [28.0880, -17.3200], // Alojera
-      [28.0780, -17.3100],
-      [28.0680, -17.2980],
-      [28.0580, -17.2850],
-      [28.0480, -17.2700], // Valle Gran Rey
-      [28.0380, -17.2550],
-      [28.0280, -17.2380], // La Dama
-      [28.0250, -17.2180],
-      [28.0280, -17.2000],
-      [28.0350, -17.1850], // Alajeró
-      [28.0400, -17.1700],
-      [28.0450, -17.1550], // Playa de Santiago
-      [28.0500, -17.1400],
-      [28.0580, -17.1280],
-      [28.0680, -17.1180],
-      [28.0780, -17.1100],
-      [28.0883, -17.1142]  // San Sebastián (cierre)
-    ],
+    coordenadas: gr132Coords,
     etapas: [
       { nombre: 'San Sebastián - Hermigua', distancia: 18.5 },
       { nombre: 'Hermigua - Vallehermoso', distancia: 22.3 },
@@ -61,6 +25,62 @@ export const rutas = [
       { nombre: 'Playa Santiago - San Sebastián', distancia: 14.5 }
     ],
     tieneImagenes360: true
+  },
+
+  // GR-131: Cumbres de La Gomera (Ruta transversal ~45km)
+  {
+    id: 'gr131',
+    nombre: 'GR-131 Cumbres de La Gomera',
+    tipo: 'GR',
+    dificultad: 'Alta',
+    distancia: 44.85,
+    duracion: '18h',
+    desnivel: 2615,
+    descripcion: 'Sendero transversal que cruza la isla de San Sebastián a Vallehermoso, pasando por el Alto de Garajonay (1487m) y el Parque Nacional.',
+    inicio: 'San Sebastián de la Gomera',
+    fin: 'Vallehermoso',
+    coordenadas: [
+      [28.091234, -17.113695], // San Sebastián
+      [28.095000, -17.118000],
+      [28.099000, -17.125000],
+      [28.103000, -17.135000],
+      [28.106000, -17.145000],
+      [28.108000, -17.155000],
+      [28.109000, -17.165000],
+      [28.109500, -17.175000],
+      [28.109000, -17.185000],
+      [28.108000, -17.195000],
+      [28.107000, -17.205000],
+      [28.106000, -17.215000],
+      [28.104453, -17.118010], // Degollada de Peraza (aprox)
+      [28.105000, -17.225000],
+      [28.106039, -17.165384], // Fortaleza de Chipude
+      [28.108000, -17.235000],
+      [28.113982, -17.125356], // Las Hayas
+      [28.118000, -17.245000],
+      [28.123000, -17.250000],
+      [28.128000, -17.250000], // Juego de Bolas
+      [28.132000, -17.255000],
+      [28.136000, -17.260000],
+      [28.140000, -17.263000],
+      [28.145000, -17.265000],
+      [28.148700, -17.265000], // Alto de Garajonay
+      [28.145000, -17.270000],
+      [28.140000, -17.275000],
+      [28.135000, -17.285000],
+      [28.130000, -17.295000],
+      [28.128000, -17.305000],
+      [28.128000, -17.315000],
+      [28.128000, -17.325000],
+      [28.128000, -17.335000]  // Vallehermoso
+    ],
+    etapas: [
+      { nombre: 'San Sebastián - Degollada de Peraza', distancia: 10.3 },
+      { nombre: 'Degollada de Peraza - Chipude', distancia: 17.3 },
+      { nombre: 'Chipude - Vallehermoso', distancia: 16.3 },
+      { nombre: 'Ext. Vallehermoso - Playa', distancia: 3.7 }
+    ],
+    tieneImagenes360: false
   },
 
   // PR-LG 7: El Contadero - Alto de Garajonay
