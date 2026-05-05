@@ -8,11 +8,13 @@ Mapa interactivo de las rutas de senderismo de La Gomera con visor de vistas 360
 
 - **Mapa interactivo** con la red completa de senderos de La Gomera (600+ km)
 - **Street View 360°** - Recorre las rutas paso a paso como si estuvieses andando
+- **Flecha direccional** - Indica la dirección hacia el siguiente punto dentro de la imagen 360°
 - **Barra de progreso** - Muestra distancia recorrida y tiempo estimado en cada punto
 - **PWA instalable** - Funciona como app nativa en móvil, tablet y escritorio
 - **Accesibilidad** - Clasificación de rutas por nivel de accesibilidad para personas con movilidad reducida
 - **Filtros** - Búsqueda por nombre y filtrado por dificultad (Fácil, Media, Alta)
 - **Puntos de interés** - Miradores, pueblos, parques nacionales marcados en el mapa
+- **Mapa restringido** - El mapa está limitado geográficamente solo a La Gomera
 
 ---
 
@@ -21,7 +23,7 @@ Mapa interactivo de las rutas de senderismo de La Gomera con visor de vistas 360
 ### Grandes Rutas (GR)
 | Ruta | Distancia | Dificultad | Descripción |
 |------|-----------|------------|-------------|
-| **GR-132** Costas de La Gomera | 115.2 km | Alta | Circular por toda la costa, 8 etapas |
+| **GR-132** Costas de La Gomera | 115.2 km | Alta | Circular por toda la costa, 8 etapas (2,829 puntos GPS reales de OSM) |
 | **GR-131** Cumbres de La Gomera | 37 km | Alta | Travesía centro, 3 etapas + ramal |
 
 ### Ruta de ejemplo con Street View 360°
@@ -103,33 +105,30 @@ Necesitas las coordenadas exactas de cada punto donde tomaste la foto:
 
 ### Paso 4: Registrar los puntos en el código
 
-Abre el archivo `src/data/rutas.js` y busca la sección `export const imagenes360`.
-
-Cada ruta que tenga imágenes 360 tiene una entrada con un array de puntos. Añade un objeto por cada foto:
+Cada ruta tiene su propia carpeta en `src/routes/`. Abre el archivo `imagenes360.js` de la ruta correspondiente:
 
 ```javascript
-export const imagenes360 = {
-  'ruta14-laguna-garajonay': [
-    {
-      id: 'ruta14-p01',                    // ID único (cualquier nombre)
-      nombre: '📍 Inicio: Aparcamiento',   // Título que aparece en el visor
-      coordenadas: [28.1150, -17.2450],    // [latitud, longitud]
-      imagen: '/images/360/laguna-grande-inicio.jpg',  // Ruta al archivo
-      distanciaRecorrida: '0 m',           // Distancia desde el inicio
-      tiempoEstimado: '0 min',             // Tiempo acumulado
-      descripcion: 'Descripción de lo que se ve en este punto.'
-    },
-    {
-      id: 'ruta14-p02',
-      nombre: '📍 Camino por el fayal-brezal',
-      coordenadas: [28.1162, -17.2422],
-      imagen: '/images/360/fayal-brezal.jpg',
-      distanciaRecorrida: '150 m',
-      tiempoEstimado: '3 min',
-      descripcion: 'Aquí se puede ver el sendero empedrado...'
-    }
-  ]
-};
+// src/routes/ruta14/imagenes360.js
+export const imagenes360 = [
+  {
+    id: 'ruta14-p01',                    // ID único
+    nombre: '📍 Inicio: Aparcamiento',   // Título en el visor
+    coordenadas: [28.1150, -17.2450],    // [latitud, longitud]
+    imagen: '/images/360/laguna-grande-inicio.jpg',  // Ruta al archivo
+    distanciaRecorrida: '0 m',           // Distancia desde el inicio
+    tiempoEstimado: '0 min',             // Tiempo acumulado
+    descripcion: 'Descripción de lo que se ve.'
+  },
+  {
+    id: 'ruta14-p02',
+    nombre: '📍 Camino por el fayal-brezal',
+    coordenadas: [28.1162, -17.2422],
+    imagen: '/images/360/fayal-brezal.jpg',
+    distanciaRecorrida: '150 m',
+    tiempoEstimado: '3 min',
+    descripcion: 'Aquí se puede ver el sendero empedrado...'
+  }
+]
 ```
 
 ### Paso 5: Verificar
@@ -145,21 +144,33 @@ la-gomera-rutas/
 │
 ├── public/
 │   ├── images/
-│   │   ├── 360/              # ← AQUÍ van tus imágenes equirectangulares
+│   │   ├── 360/              # ← Imágenes equirectangulares
 │   │   └── leaflet/          # Iconos del mapa
 │   └── favicon.svg           # Icono del navegador
 │
 ├── src/
-│   ├── components/
-│   │   ├── Header.jsx        # Barra superior con menú
-│   │   ├── Sidebar.jsx       # Panel lateral con búsqueda y filtros
-│   │   ├── RouteDetail.jsx   # Panel de detalle de la ruta seleccionada
-│   │   ├── Viewer360.jsx     # Visor Street View 360° con barra de progreso
-│   │   ├── Legend.jsx        # Leyenda del mapa
-│   │   └── FloatingButtons.jsx # Botones flotantes
+│   ├── routes/               # Datos de cada ruta (una carpeta por ruta)
+│   │   ├── gr132/
+│   │   │   └── coords.js     # 2,829 puntos GPS reales de OSM
+│   │   ├── gr131/
+│   │   │   └── coords.js
+│   │   ├── ruta14/
+│   │   │   ├── coords.js
+│   │   │   └── imagenes360.js  # 18 puntos con vistas 360°
+│   │   ├── ruta-XX/          # Resto de rutas (25+)
+│   │   │   └── coords.js
+│   │   └── index.js          # Exporta todas las rutas
 │   │
 │   ├── data/
-│   │   └── rutas.js          # TODOS los datos: rutas, puntos interés, imágenes 360
+│   │   └── rutas.js          # Metadatos: nombre, distancia, dificultad, etc.
+│   │
+│   ├── components/
+│   │   ├── Header.jsx        # Barra superior
+│   │   ├── Sidebar.jsx       # Panel lateral con búsqueda y filtros
+│   │   ├── RouteDetail.jsx   # Detalles de la ruta seleccionada
+│   │   ├── Viewer360.jsx     # Visor 360° con flecha direccional
+│   │   ├── Legend.jsx        # Leyenda del mapa
+│   │   └── FloatingButtons.jsx # Botones flotantes
 │   │
 │   ├── App.jsx               # Componente principal (mapa + lógica)
 │   ├── main.jsx              # Punto de entrada
@@ -183,6 +194,7 @@ la-gomera-rutas/
 | **Pannellum** | Visor de panorámicas 360° (cargado desde CDN) |
 | **Vite PWA** | Progressive Web App |
 | **OpenStreetMap** | Capa base del mapa |
+| **OpenStreetMap Data** | Coordenadas GPS reales de senderos (GR-132: 2,829 puntos) |
 
 ---
 
@@ -214,21 +226,31 @@ Cada ruta en `src/data/rutas.js` incluye:
   descripcion: '...',              // Descripción de la ruta
   inicio: 'Laguna Grande',         // Punto de inicio
   fin: 'Laguna Grande',            // Punto de fin
-  coordenadas: [[lat, lon], ...],  // Array de coordenadas GPS del trazado
   tieneImagenes360: true,          // Si tiene imágenes 360
   esRutaEjemplo360: true           // Si es la ruta demo con street view
 }
+```
+
+Los **puntos GPS del trazado** se almacenan en `src/routes/{id-ruta}/coords.js`:
+```javascript
+export const coords = [
+  [28.1150, -17.2450],  // [latitud, longitud]
+  [28.1155, -17.2448],
+  // ... más puntos
+]
 ```
 
 ---
 
 ## 🔄 Flujo de uso
 
-1. **El usuario abre la app** → Ve el mapa de La Gomera con todas las rutas dibujadas
-2. **Navega por el sidebar** → Filtra por dificultad o busca por nombre
+1. **El usuario abre la app** → Ve el mapa de La Gomera con todas las rutas dibujadas (limitado geográficamente a la isla)
+2. **Navega por el sidebar** → Filtra por dificultad o busca por nombre (la ruta seleccionada aparece primero)
 3. **Selecciona una ruta** → El mapa hace zoom y dibuja el trazado completo resaltado
 4. **Ve los detalles** → Distancia, duración, desnivel, accesibilidad, descripción
-5. **Abre Street View** → Recorre la ruta punto a punto con imágenes 360°, viendo distancia y tiempo
+5. **Abre Street View** → Recorre la ruta punto a punto con imágenes 360°
+6. **Sigue la flecha** → Una flecha direccional dentro de la imagen indica hacia dónde va el siguiente punto
+7. **Barra de progreso** → Visualiza distancia recorrida y tiempo estimado
 
 ---
 
@@ -239,6 +261,7 @@ Cada ruta en `src/data/rutas.js` incluye:
 - [Senderos de Canarias](https://lagomera.senderosdecanarias.com/)
 - [Forwalk - La Gomera](https://lagomera.forwalk.org/)
 - [Hola Islas Canarias](https://www.holaislascanarias.com/senderos/la-gomera/)
+- [OpenStreetMap](https://www.openstreetmap.org/) - Datos GPS de senderos
 
 ---
 

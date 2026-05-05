@@ -32,21 +32,38 @@ export default function Viewer360({ images, onClose, routeId }) {
     document.head.appendChild(script)
   }, [])
 
+  // Calcular acimut (yaw) hacia el siguiente punto
+  const getNextYaw = () => {
+    if (!images || images.length < 2 || currentIndex >= images.length - 1) return null;
+    const [lat1, lon1] = currentImage?.coordenadas || [0, 0];
+    const [lat2, lon2] = images[currentIndex + 1]?.coordenadas || [0, 0];
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const lat1Rad = lat1 * Math.PI / 180;
+    const lat2Rad = lat2 * Math.PI / 180;
+    const y = Math.sin(dLon) * Math.cos(lat2Rad);
+    const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+    let yaw = Math.atan2(y, x) * 180 / Math.PI;
+    return ((yaw % 360) + 360) % 360;
+  }
+
   // Crear/actualizar viewer
   useEffect(() => {
-    if (!isPannellumReady || !currentImage || !containerRef.current) return
+    if (!isPannellumReady || !currentImage || !containerRef.current) return;
 
     setLoading(true)
     setError(null)
 
     if (viewerRef.current) {
       viewerRef.current.destroy()
-      viewerRef.current = null
+      viewerRef.current = null;
     }
 
-    containerRef.current.innerHTML = ''
+    containerRef.current.innerHTML = '';
 
     try {
+      const nextYaw = getNextYaw();
+      const initialYaw = nextYaw !== null ? nextYaw : 0;
+      
       const viewer = window.pannellum.viewer(containerRef.current, {
         type: 'equirectangular',
         panorama: currentImage.imagen,
@@ -54,18 +71,43 @@ export default function Viewer360({ images, onClose, routeId }) {
         showControls: true,
         showFullscreenCtrl: false,
         title: currentImage.nombre,
-      })
+        default: { yaw: initialYaw, pitch: 0 },
+        hotSpots: nextYaw !== null ? [
+          {
+            pitch: -10,
+            yaw: nextYaw,
+            type: 'scene',
+            text: '→ Siguiente',
+            cssClassName: 'custom-hotspot',
+            createTooltipFunc: (hotSpotDiv) => {
+              hotSpotDiv.innerHTML = `<div style="
+                width: 0; height: 0;
+                border-left: 20px solid rgba(255,255,255,0.8);
+                border-top: 15px solid transparent;
+                border-bottom: 15px solid transparent;
+                filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6));
+                cursor: pointer;
+                animation: pulse 2s infinite;
+              "></div>`;
+              hotSpotDiv.style.cursor = 'pointer';
+              hotSpotDiv.addEventListener('click', () => {
+                if (currentIndex < images.length - 1) setCurrentIndex(currentIndex + 1);
+              });
+            }
+          }
+        ] : []
+      });
 
       viewer.on('load', () => {
         setLoading(false)
-      })
+      });
 
       viewer.on('error', () => {
         setError('Error al cargar la imagen')
         setLoading(false)
-      })
+      });
 
-      viewerRef.current = viewer
+      viewerRef.current = viewer;
     } catch (e) {
       console.error('Error creando viewer:', e)
       setError('Error al inicializar')
@@ -75,7 +117,7 @@ export default function Viewer360({ images, onClose, routeId }) {
     return () => {
       if (viewerRef.current) {
         viewerRef.current.destroy()
-        viewerRef.current = null
+        viewerRef.current = null;
       }
     }
   }, [isPannellumReady, currentIndex])
@@ -120,7 +162,7 @@ export default function Viewer360({ images, onClose, routeId }) {
       }}>
         <button onClick={onClose} style={{
           position: 'absolute', top: '12px', right: '12px',
-          background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none',
+          background: 'rgba(0,0,0,0.6)', color: 'white', border: 'none',
           borderRadius: '50%', width: '36px', height: '36px', fontSize: '20px',
           cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
           zIndex: 30
@@ -159,22 +201,22 @@ export default function Viewer360({ images, onClose, routeId }) {
           {/* Flechas difuminadas sobre la imagen */}
           {images && images.length > 1 && (
             <>
-              <button 
-                onClick={handlePrev}
-                disabled={currentIndex === 0}
-                style={fadeStyle}
-                aria-label="Punto anterior"
-              >
-                ‹
-              </button>
-              <button 
-                onClick={handleNext}
-                disabled={currentIndex === images.length - 1}
-                style={fadeStyleRight}
-                aria-label="Siguiente punto"
-              >
-                ›
-              </button>
+                <button 
+                  onClick={handlePrev}
+                  disabled={currentIndex === 0}
+                  style={fadeStyle}
+                  aria-label="Punto anterior"
+                >
+                  ‹
+                </button>
+                <button 
+                  onClick={handleNext}
+                  disabled={currentIndex === images.length - 1}
+                  style={fadeStyleRight}
+                  aria-label="Siguiente punto"
+                >
+                  ›
+                </button>
             </>
           )}
         </div>
