@@ -76,9 +76,8 @@ export default function Viewer360({ images, onClose, routeId }) {
           {
             pitch: -10,
             yaw: nextYaw,
-            type: 'scene',
-            text: '→ Siguiente',
-            cssClassName: 'custom-hotspot',
+            type: 'custom',
+            cssClass: 'custom-hotspot',
             createTooltipFunc: (hotSpotDiv) => {
               hotSpotDiv.innerHTML = `<div style="
                 width: 0; height: 0;
