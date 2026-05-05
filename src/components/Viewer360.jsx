@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 
-export default function Viewer360({ images, onClose }) {
+export default function Viewer360({ images, onClose, routeId }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const viewerRef = useRef(null)
   const containerRef = useRef(null)
@@ -101,116 +101,130 @@ export default function Viewer360({ images, onClose }) {
   }
 
   return (
-    <div className="viewer-360" style={{
+    <div style={{
       position: 'fixed',
       top: 0, left: 0, right: 0, bottom: 0,
       zIndex: 9999,
-      background: '#000',
-      display: 'flex', flexDirection: 'column'
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'rgba(0,0,0,0.85)'
     }}>
-      <div className="viewer-360-header" style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '12px 16px', background: 'rgba(0,0,0,0.5)',
-        borderBottom: '1px solid rgba(255,255,255,0.1)'
+      <div style={{
+        width: '90vw', height: '85vh',
+        maxWidth: '1200px', maxHeight: '900px',
+        background: '#000',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        display: 'flex', flexDirection: 'column',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+        position: 'relative'
       }}>
-        <div>
-          <span style={{ color: 'white', fontSize: '14px', fontWeight: '500' }}>
-            Vista 360 - Paso {currentIndex + 1} de {images?.length || 0}
-          </span>
-          <div style={{ fontSize: '11px', opacity: 0.8, marginTop: '2px', color: '#ccc' }}>
-            {currentImage?.distanciaRecorrida} recorridos · {currentImage?.tiempoEstimado}
-          </div>
-        </div>
-        <button className="close-btn" onClick={onClose} style={{
+        <button onClick={onClose} style={{
+          position: 'absolute', top: '12px', right: '12px',
           background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none',
-          borderRadius: '50%', width: '32px', height: '32px', fontSize: '18px',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+          borderRadius: '50%', width: '36px', height: '36px', fontSize: '20px',
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 30
         }}>✕</button>
-      </div>
 
-      <div className="viewer-360-body" style={{ position: 'relative', flex: 1, overflow: 'hidden' }}>
-        <div ref={containerRef} style={{ width: '100%', height: '100%', background: '#000' }} />
-        
-        {loading && (
-          <div className="viewer-placeholder" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10, background: '#000' }}>
-            <p>Cargando vista 360...</p>
-          </div>
-        )}
-        
-        {error && (
-          <div className="viewer-placeholder" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10, background: '#000' }}>
-            <p style={{ color: '#f87171' }}>{error}</p>
-          </div>
-        )}
-
-        {/* Flechas difuminadas sobre la imagen */}
-        {images && images.length > 1 && (
-          <>
-            <button 
-              onClick={handlePrev}
-              disabled={currentIndex === 0}
-              style={fadeStyle}
-              aria-label="Punto anterior"
-            >
-              ‹
-            </button>
-            <button 
-              onClick={handleNext}
-              disabled={currentIndex === images.length - 1}
-              style={fadeStyleRight}
-              aria-label="Siguiente punto"
-            >
-              ›
-            </button>
-          </>
-        )}
-      </div>
-
-      {/* Barra de progreso estilo street view */}
-      <div style={{ padding: '8px 16px', background: 'rgba(0,0,0,0.5)', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', color: '#ccc', fontSize: '11px' }}>
-          <span>🏁 Inicio</span>
-          <span>🏔️ Cima (1.487m)</span>
-          <span>🏁 Fin</span>
-        </div>
-        <div style={{ height: '6px', background: '#333', borderRadius: '3px', overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${progress}%`, background: 'var(--primary)', borderRadius: '3px', transition: 'width 0.3s ease' }} />
-        </div>
-      </div>
-
-      {/* Info de la imagen actual */}
-      <div style={{ padding: '12px 16px', background: 'rgba(0,0,0,0.5)', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-        <p style={{ fontSize: '13px', color: '#fff', marginBottom: '4px', fontWeight: '500' }}>
-          {currentImage?.nombre}
-        </p>
-        <p style={{ fontSize: '12px', color: '#aaa', lineHeight: '1.5', marginBottom: '8px' }}>
-          {currentImage?.descripcion}
-        </p>
-
-        {images && images.length > 1 && (
-          <>
-            {/* Miniaturas de todos los puntos */}
-            <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px' }}>
-              {images.map((img, idx) => (
-                <button
-                  key={img.id}
-                  onClick={() => setCurrentIndex(idx)}
-                  style={{
-                    minWidth: '36px', height: '36px', borderRadius: '6px',
-                    border: idx === currentIndex ? '2px solid var(--primary)' : '2px solid transparent',
-                    background: idx === currentIndex ? 'var(--primary)' : '#333',
-                    cursor: 'pointer', fontSize: '10px', fontWeight: '600',
-                    color: idx === currentIndex ? 'white' : '#aaa',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    flexShrink: 0
-                  }}
-                >
-                  {idx + 1}
-                </button>
-              ))}
+        <div className="viewer-360-header" style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '12px 16px', background: 'rgba(0,0,0,0.5)',
+          borderBottom: '1px solid rgba(255,255,255,0.1)'
+        }}>
+          <div>
+            <span style={{ color: 'white', fontSize: '14px', fontWeight: '500' }}>
+              Vista 360 - Paso {currentIndex + 1} de {images?.length || 0}
+            </span>
+            <div style={{ fontSize: '11px', opacity: 0.8, marginTop: '2px', color: '#ccc' }}>
+              {currentImage?.distanciaRecorrida} recorridos · {currentImage?.tiempoEstimado}
             </div>
-          </>
-        )}
+          </div>
+        </div>
+
+        <div className="viewer-360-body" style={{ position: 'relative', flex: 1, overflow: 'hidden' }}>
+          <div ref={containerRef} style={{ width: '100%', height: '100%', background: '#000' }} />
+          
+          {loading && (
+            <div className="viewer-placeholder" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10, background: '#000' }}>
+              <p>Cargando vista 360...</p>
+            </div>
+          )}
+          
+          {error && (
+            <div className="viewer-placeholder" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10, background: '#000' }}>
+              <p style={{ color: '#f87171' }}>{error}</p>
+            </div>
+          )}
+
+          {/* Flechas difuminadas sobre la imagen */}
+          {images && images.length > 1 && (
+            <>
+              <button 
+                onClick={handlePrev}
+                disabled={currentIndex === 0}
+                style={fadeStyle}
+                aria-label="Punto anterior"
+              >
+                ‹
+              </button>
+              <button 
+                onClick={handleNext}
+                disabled={currentIndex === images.length - 1}
+                style={fadeStyleRight}
+                aria-label="Siguiente punto"
+              >
+                ›
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Barra de progreso estilo street view */}
+        <div style={{ padding: '8px 16px', background: 'rgba(0,0,0,0.5)', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', color: '#ccc', fontSize: '11px' }}>
+            <span>🏁 Inicio</span>
+            <span>🏔️ Cima (1.487m)</span>
+            <span>🏁 Fin</span>
+          </div>
+          <div style={{ height: '6px', background: '#333', borderRadius: '3px', overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${progress}%`, background: 'var(--primary)', borderRadius: '3px', transition: 'width 0.3s ease' }} />
+          </div>
+        </div>
+
+        {/* Info de la imagen actual */}
+        <div style={{ padding: '12px 16px', background: 'rgba(0,0,0,0.5)', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <p style={{ fontSize: '13px', color: '#fff', marginBottom: '4px', fontWeight: '500' }}>
+            {currentImage?.nombre}
+          </p>
+          <p style={{ fontSize: '12px', color: '#aaa', lineHeight: '1.5', marginBottom: '8px' }}>
+            {currentImage?.descripcion}
+          </p>
+
+          {images && images.length > 1 && (
+            <>
+              {/* Miniaturas de todos los puntos */}
+              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px' }}>
+                {images.map((img, idx) => (
+                  <button
+                    key={img.id}
+                    onClick={() => setCurrentIndex(idx)}
+                    style={{
+                      minWidth: '36px', height: '36px', borderRadius: '6px',
+                      border: idx === currentIndex ? '2px solid var(--primary)' : '2px solid transparent',
+                      background: idx === currentIndex ? 'var(--primary)' : '#333',
+                      cursor: 'pointer', fontSize: '10px', fontWeight: '600',
+                      color: idx === currentIndex ? 'white' : '#aaa',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0
+                    }}
+                  >
+                    {idx + 1}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )
