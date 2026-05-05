@@ -46,6 +46,20 @@ export default function Viewer360({ images, onClose, routeId }) {
     return ((yaw % 360) + 360) % 360;
   }
 
+  // Calcular acimut (yaw) hacia el punto anterior
+  const getPrevYaw = () => {
+    if (!images || images.length < 2 || currentIndex <= 0) return null;
+    const [lat1, lon1] = currentImage?.coordenadas || [0, 0];
+    const [lat2, lon2] = images[currentIndex - 1]?.coordenadas || [0, 0];
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const lat1Rad = lat1 * Math.PI / 180;
+    const lat2Rad = lat2 * Math.PI / 180;
+    const y = Math.sin(dLon) * Math.cos(lat2Rad);
+    const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+    let yaw = Math.atan2(y, x) * 180 / Math.PI;
+    return ((yaw % 360) + 360) % 360;
+  }
+
   // Crear/actualizar viewer
   useEffect(() => {
     if (!isPannellumReady || !currentImage || !containerRef.current) return;
@@ -62,7 +76,58 @@ export default function Viewer360({ images, onClose, routeId }) {
 
     try {
       const nextYaw = getNextYaw();
-      const initialYaw = nextYaw !== null ? nextYaw : 0;
+      const prevYaw = getPrevYaw();
+      const initialYaw = nextYaw !== null ? nextYaw : prevYaw !== null ? prevYaw : 0;
+      
+      const hotspots = [];
+      
+      if (nextYaw !== null) {
+        hotspots.push({
+          pitch: -10,
+          yaw: nextYaw,
+          type: 'custom',
+          cssClass: 'custom-hotspot',
+          createTooltipFunc: (hotSpotDiv) => {
+            hotSpotDiv.innerHTML = `<div style="
+              width: 0; height: 0;
+              border-left: 20px solid rgba(255,255,255,0.8);
+              border-top: 15px solid transparent;
+              border-bottom: 15px solid transparent;
+              filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6));
+              cursor: pointer;
+              animation: pulse 2s infinite;
+            "></div>`;
+            hotSpotDiv.style.cursor = 'pointer';
+            hotSpotDiv.addEventListener('click', () => {
+              if (currentIndex < images.length - 1) setCurrentIndex(currentIndex + 1);
+            });
+          }
+        });
+      }
+      
+      if (prevYaw !== null) {
+        hotspots.push({
+          pitch: -10,
+          yaw: prevYaw,
+          type: 'custom',
+          cssClass: 'custom-hotspot-prev',
+          createTooltipFunc: (hotSpotDiv) => {
+            hotSpotDiv.innerHTML = `<div style="
+              width: 0; height: 0;
+              border-right: 20px solid rgba(255,255,255,0.8);
+              border-top: 15px solid transparent;
+              border-bottom: 15px solid transparent;
+              filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6));
+              cursor: pointer;
+              animation: pulse 2s infinite;
+            "></div>`;
+            hotSpotDiv.style.cursor = 'pointer';
+            hotSpotDiv.addEventListener('click', () => {
+              if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
+            });
+          }
+        });
+      }
       
       const viewer = window.pannellum.viewer(containerRef.current, {
         type: 'equirectangular',
@@ -72,29 +137,7 @@ export default function Viewer360({ images, onClose, routeId }) {
         showFullscreenCtrl: false,
         title: currentImage.nombre,
         default: { yaw: initialYaw, pitch: 0 },
-        hotSpots: nextYaw !== null ? [
-          {
-            pitch: -10,
-            yaw: nextYaw,
-            type: 'custom',
-            cssClass: 'custom-hotspot',
-            createTooltipFunc: (hotSpotDiv) => {
-              hotSpotDiv.innerHTML = `<div style="
-                width: 0; height: 0;
-                border-left: 20px solid rgba(255,255,255,0.8);
-                border-top: 15px solid transparent;
-                border-bottom: 15px solid transparent;
-                filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6));
-                cursor: pointer;
-                animation: pulse 2s infinite;
-              "></div>`;
-              hotSpotDiv.style.cursor = 'pointer';
-              hotSpotDiv.addEventListener('click', () => {
-                if (currentIndex < images.length - 1) setCurrentIndex(currentIndex + 1);
-              });
-            }
-          }
-        ] : []
+        hotSpots: hotspots
       });
 
       viewer.on('load', () => {
