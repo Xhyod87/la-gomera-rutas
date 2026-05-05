@@ -83,6 +83,23 @@ export default function Viewer360({ images, onClose }) {
   const handlePrev = () => setCurrentIndex((p) => (p > 0 ? p - 1 : images.length - 1))
   const handleNext = () => setCurrentIndex((p) => (p < images.length - 1 ? p + 1 : 0))
 
+  const fadeStyle = {
+    background: 'linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%)',
+    position: 'absolute',
+    top: 0, left: 0, bottom: 0, width: '100px',
+    zIndex: 20, cursor: 'pointer', border: 'none', color: 'white',
+    fontSize: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    opacity: currentIndex === 0 ? 0.3 : 1,
+    transition: 'opacity 0.3s',
+    pointerEvents: currentIndex === 0 ? 'none' : 'auto'
+  }
+
+  const fadeStyleRight = {
+    ...fadeStyle,
+    left: 'auto', right: 0,
+    background: 'linear-gradient(to left, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%)'
+  }
+
   return (
     <div className="viewer-360">
       <div className="viewer-360-header">
@@ -97,17 +114,39 @@ export default function Viewer360({ images, onClose }) {
 
       <div className="viewer-360-body" style={{ position: 'relative' }}>
         <div ref={containerRef} style={{ width: '100%', height: '100%', background: '#000' }} />
-
+        
         {loading && (
           <div className="viewer-placeholder" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10, background: '#000' }}>
             <p>Cargando vista 360...</p>
           </div>
         )}
-
+        
         {error && (
           <div className="viewer-placeholder" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10, background: '#000' }}>
             <p style={{ color: '#f87171' }}>{error}</p>
           </div>
+        )}
+
+        {/* Flechas difuminadas sobre la imagen */}
+        {images && images.length > 1 && (
+          <>
+            <button 
+              onClick={handlePrev}
+              disabled={currentIndex === 0}
+              style={fadeStyle}
+              aria-label="Punto anterior"
+            >
+              ‹
+            </button>
+            <button 
+              onClick={handleNext}
+              disabled={currentIndex === images.length - 1}
+              style={fadeStyleRight}
+              aria-label="Siguiente punto"
+            >
+              ›
+            </button>
+          </>
         )}
       </div>
 
@@ -133,35 +172,6 @@ export default function Viewer360({ images, onClose }) {
 
         {images && images.length > 1 && (
           <>
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
-              <button 
-                onClick={handlePrev} 
-                disabled={images.length <= 1}
-                style={{ 
-                  flex: 1, padding: '10px', 
-                  background: currentIndex === 0 ? '#ccc' : 'var(--primary)', 
-                  color: 'white', border: 'none', borderRadius: '8px', 
-                  cursor: currentIndex === 0 ? 'not-allowed' : 'pointer',
-                  fontWeight: '500'
-                }}
-              >
-                ← Anterior
-              </button>
-              <button 
-                onClick={handleNext} 
-                disabled={images.length <= 1}
-                style={{ 
-                  flex: 1, padding: '10px', 
-                  background: currentIndex === images.length - 1 ? '#ccc' : 'var(--primary)', 
-                  color: 'white', border: 'none', borderRadius: '8px', 
-                  cursor: currentIndex === images.length - 1 ? 'not-allowed' : 'pointer',
-                  fontWeight: '500'
-                }}
-              >
-                Siguiente →
-              </button>
-            </div>
-            
             {/* Miniaturas de todos los puntos */}
             <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '8px' }}>
               {images.map((img, idx) => (
