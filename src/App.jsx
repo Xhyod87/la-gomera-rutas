@@ -103,8 +103,8 @@ function App() {
         <div className="map-container">
           <MapContainer
             center={[28.10, -17.25]}
-            zoom={9}
-            minZoom={9}
+            zoom={10}
+            minZoom={10}
             maxZoom={16}
             maxBounds={[[27.85, -17.50], [28.35, -16.95]]}
             maxBoundsViscosity={1.0}
