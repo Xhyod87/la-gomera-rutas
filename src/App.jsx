@@ -172,20 +172,20 @@ function App() {
             />
           )}
 
-          {viewer360Open && selectedRoute && (
-            <Viewer360
-              images={imagenes360[selectedRoute.id] || []}
-              onClose={() => setViewer360Open(false)}
-              routeId={selectedRoute?.id}
-            />
-          )}
-
           {showLegend && <Legend />}
 
           <FloatingButtons
             onToggleLegend={() => setShowLegend(!showLegend)}
           />
         </div>
+
+        {viewer360Open && selectedRoute && (
+          <Viewer360
+            images={imagenes360[selectedRoute.id] || []}
+            onClose={() => setViewer360Open(false)}
+            routeId={selectedRoute?.id}
+          />
+        )}
       </div>
     </>
   )
